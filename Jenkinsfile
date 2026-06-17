@@ -33,30 +33,33 @@ pipeline {
         stage('Deploy to Local Endpoint') {
             steps {
                 script {
-                    echo "Stopping and removing existing container (if any)..."
-                    // The || true prevents the pipeline from failing if this is the first deployment
+                    echo "Stopping and removing existing container..."
                     sh """
                         docker stop ${CONTAINER_NAME} || true
                         docker rm ${CONTAINER_NAME} || true
                     """
 
-                    echo "Starting new container on port ${HOST_PORT}..."
-                    // -d runs it in the background (detached)
+                    echo "Starting new container..."
                     sh "docker run -d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME} ${IMAGE_NAME}:latest"
+                    
+                    echo "Checking container application status..."
+                    sh "sleep 3"
+                    // This will print the actual Flask boot logs directly into your Jenkins console
+                    sh "docker logs ${CONTAINER_NAME}"
                 }
             }
         }
     }
     
-    post {
+   post {
         success {
             script {
-                echo "Waiting 3 seconds for Flask application to initialize..."
-                sh "sleep 3"
+                echo "Waiting 5 seconds for Flask application to initialize..."
+                sh "sleep 5"
                 
-                echo "Testing the local endpoint..."
-                // Changed IP to localhost and added the test
-                sh "curl 'http://localhost:5050/calculate?op=add&a=10&b=5'"
+                echo "Testing the local endpoint with proxy bypass..."
+                // Added --noproxy "*" to explicitly ignore any background corporate proxies
+                sh "curl --noproxy '*' 'http://localhost:5050/calculate?op=add&a=10&b=5'"
             }
         }
         failure {
