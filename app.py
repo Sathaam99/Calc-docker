@@ -1,13 +1,24 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
+# Serve the HTML GUI on the base URL
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+# The Calculator API
 @app.route('/calculate', methods=['GET'])
 def calculate():
-    # Example usage: http://localhost:5000/calculate?op=add&a=5&b=10
     op = request.args.get('op')
-    a = float(request.args.get('a', 0))
-    b = float(request.args.get('b', 0))
+    
+    try:
+        a = float(request.args.get('a', 0))
+        b = float(request.args.get('b', 0))
+    except ValueError:
+        return jsonify(error="Inputs must be numbers"), 400
 
     if op == 'add':
         return jsonify(operation="addition", result=a + b)
@@ -22,10 +33,11 @@ def calculate():
     else:
         return jsonify(error="Invalid operation. Use add, sub, mul, or div"), 400
 
+# Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify(status="healthy")
 
 if __name__ == '__main__':
-    # Binds to 0.0.0.0 so it's accessible outside the container
+    # Binds to 0.0.0.0 and runs on port 5060 to match the Dockerfile EXPOSE directive
     app.run(host='0.0.0.0', port=5060)
