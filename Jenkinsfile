@@ -10,7 +10,7 @@ pipeline {
         IMAGE_NAME = 'python-calculator-app'
         CONTAINER_NAME = 'calculator-container'
         HOST_PORT = '5050'
-        CONTAINER_PORT = '5050'
+        CONTAINER_PORT = '5060'
     }
 
     stages {
