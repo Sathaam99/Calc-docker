@@ -50,7 +50,7 @@ pipeline {
     
     post {
         success {
-            echo "Deployment Successful! Calculator API is live at http://localhost:${HOST_PORT}/calculate"
+            echo "Deployment Successful! Calculator API is live at http://192.168.1.2:${HOST_PORT}/calculate"
         }
         failure {
             echo "Deployment Failed. Check the Jenkins build logs for details."
