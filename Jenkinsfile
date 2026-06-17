@@ -51,14 +51,17 @@ pipeline {
     post {
         success {
             echo "Deployment Successful! Calculator API is live at http://192.168.1.2:${HOST_PORT}/calculate"
-            //Test Addition
+
+            sh '''
+            #Test Addition
             curl "http://192.168.1.2:5050/calculate?op=add&a=10&b=5"
             
-            //Test Division
+            #Test Division
             curl "http://192.168.1.2:5050/calculate?op=div&a=20&b=4"
             
-            //Test Health Check
+            #Test Health Check
             curl "http://192.168.1.2:5050/health"
+            '''
         }
         failure {
             echo "Deployment Failed. Check the Jenkins build logs for details."
