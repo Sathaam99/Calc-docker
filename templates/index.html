@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Calculator</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: #f4f4f9; 
+            margin: 0; 
+        }
+        .calculator-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            width: 350px; 
+            text-align: center; 
+        }
+        .input-group { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 20px; 
+        }
+        input[type="number"], select { 
+            padding: 10px; 
+            font-size: 16px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            width: 30%; 
+            text-align: center; 
+            box-sizing: border-box;
+        }
+        select { 
+            width: 25%; 
+            cursor: pointer; 
+        }
+        button { 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            font-size: 16px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-bottom: 15px; 
+            transition: background 0.3s; 
+        }
+        button:hover { 
+            background-color: #0056b3; 
+        }
+        .health-btn { 
+            background-color: #28a745; 
+        }
+        .health-btn:hover { 
+            background-color: #1e7e34; 
+        }
+        .result-box { 
+            background: #e9ecef; 
+            padding: 15px; 
+            border-radius: 6px; 
+            font-size: 20px; 
+            font-weight: bold; 
+            margin-bottom: 20px; 
+            min-height: 24px; 
+            word-wrap: break-word;
+        }
+        .status-text { 
+            font-size: 14px; 
+            color: #555; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <h2>API Calculator</h2>
+    
+    <div class="input-group">
+        <input type="number" id="numA" placeholder="Num 1">
+        <select id="operation">
+            <option value="add">+</option>
+            <option value="sub">-</option>
+            <option value="mul">×</option>
+            <option value="div">÷</option>
+        </select>
+        <input type="number" id="numB" placeholder="Num 2">
+    </div>
+
+    <button onclick="performCalculation()">Calculate</button>
+    <div class="result-box" id="resultDisplay">Result will appear here</div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+    <button class="health-btn" onclick="checkHealth()">Check API Health</button>
+    <div class="status-text" id="healthDisplay">Status: Unknown</div>
+</div>
+
+<script>
+    // Empty base URL so it uses relative routing to the current host
+    const API_BASE_URL = '';
+
+    async function performCalculation() {
+        const a = document.getElementById('numA').value;
+        const b = document.getElementById('numB').value;
+        const op = document.getElementById('operation').value;
+        const resultDisplay = document.getElementById('resultDisplay');
+
+        if (!a || !b) {
+            resultDisplay.innerText = "Please enter both numbers.";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/calculate?op=${op}&a=${a}&b=${b}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                resultDisplay.innerText = `${data.result}`;
+            } else {
+                resultDisplay.innerText = `Error: ${data.error}`;
+            }
+        } catch (error) {
+            resultDisplay.innerText = "Failed to connect to API.";
+            console.error("Calculation Error:", error);
+        }
+    }
+
+    async function checkHealth() {
+        const healthDisplay = document.getElementById('healthDisplay');
+        healthDisplay.innerText = "Checking...";
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/health`);
+            const data = await response.json();
+
+            if (response.ok) {
+                healthDisplay.innerText = `Status: ${data.status.toUpperCase()} 🟢`;
+            } else {
+                healthDisplay.innerText = "Status: ERROR 🔴";
+            }
+        } catch (error) {
+            healthDisplay.innerText = "Status: OFFLINE 🔴";
+            console.error("Health Check Error:", error);
+        }
+    }
+</script>
+
+</body>
+</html>
