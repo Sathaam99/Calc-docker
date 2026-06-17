@@ -9,8 +9,8 @@ pipeline {
     environment {
         IMAGE_NAME = 'python-calculator-app'
         CONTAINER_NAME = 'calculator-container'
-        HOST_PORT = '5000'
-        CONTAINER_PORT = '5000'
+        HOST_PORT = '5050'
+        CONTAINER_PORT = '5050'
     }
 
     stages {
